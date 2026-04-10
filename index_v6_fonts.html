@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Accidental Genius Studio – iA Draft v6</title>
+  <meta name="theme-color" content="#171717" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Accidental Genius" />
+  <style>
+    :root {
+      --bg:#171717; --bg-mid:#1b1b1b; --surface:#1f1f1f; --surface-2:#222222; --surface-3:#2a2a2a;
+      --border:#313131; --border-light:#5a5a5a; --ink:#ece9e2; --ink-light:#b9b2a5; --ink-dim:#84807a;
+      --gold:#d6c4a5; --gold-light:#f1e7d8; --purple:#585858; --purple-dark:#3a3a3a; --green:#575e57;
+      --green-dark:#3d433d; --red:#6b5752; --red-dark:#4b3d39; --blue:#5b6470; --blue-dark:#3f4751;
+      --teal:#586460; --teal-dark:#3d4744; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --body: Charter, Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      --baskerville: Baskerville, "Baskerville Old Face", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --typewriter: "Courier New", Courier, "Nimbus Mono PS", "Liberation Mono", monospace;
+      --ui-font: var(--mono);
+      --writing-font: var(--baskerville);
+      --touch: 44px; --radius: 12px;
+    }
+    body.light {
+      --bg:#f4f1ea; --bg-mid:#efebe2; --surface:#fbfaf7; --surface-2:#f6f3ec; --surface-3:#ece7dd;
+      --border:#d1c8ba; --border-light:#9c9283; --ink:#1b1916; --ink-light:#61594f; --ink-dim:#8c8477;
+      --gold:#6f6557; --gold-light:#51483d; --purple:#706a62; --purple-dark:#555049; --green:#64685f;
+      --green-dark:#4d5148; --red:#785f58; --red-dark:#5b4843; --blue:#637180; --blue-dark:#4b5764;
+      --teal:#64706b; --teal-dark:#4d5753;
+    }
+    body.epaper {
+      --bg:#f7f4ed; --bg-mid:#f1ede4; --surface:#fffdf8; --surface-2:#faf6ee; --surface-3:#ede8dd;
+      --border:#9d9688; --border-light:#5f5a50; --ink:#141414; --ink-light:#4d4d4d; --ink-dim:#767676;
+      --gold:#2b2b2b; --gold-light:#000; --purple:#4d4d4d; --purple-dark:#2f2f2f; --green:#2f2f2f;
+      --green-dark:#000; --red:#000; --red-dark:#000; --blue:#2f2f2f; --blue-dark:#000; --teal:#2f2f2f; --teal-dark:#000;
+    }
+    * { box-sizing:border-box; }
+    html, body { margin:0; min-height:100%; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--writing-font);
+      background-image:none;
+    }
+    body.light, body.epaper { background-image:none; }
+    body.font-baskerville { --writing-font: var(--baskerville); --ui-font: var(--mono); }
+    body.font-typewriter { --writing-font: var(--typewriter); --ui-font: var(--mono); }
+    #app { max-width: 1480px; margin:0 auto; padding: 10px 10px 96px; }
+    .hero {
+      padding: 14px 16px; border-radius: 12px; border:1px solid var(--border);
+      background: var(--surface); margin-bottom:10px;
+      box-shadow:none;
+    }
+    body.light .hero, body.epaper .hero { background: var(--surface); box-shadow:none; }
+    .title { font-family: var(--writing-font); font-size: 24px; font-weight: 700; letter-spacing:.01em; color: var(--ink); text-transform: none; margin:0; }
+    .sub { margin-top:6px; color:var(--ink-light); font-size: 12px; letter-spacing: .03em; text-transform: none; line-height:1.45; }
+    .stats { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; margin-top:12px; }
+    .stat { background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+    .stat .k { font-size:11px; color:var(--ink-light); text-transform:uppercase; letter-spacing:.06em; }
+    .stat .v { margin-top:4px; font-size:20px; font-weight:700; color:var(--ink); font-family:var(--mono); }
+    .toolbar, .btnrow, .chips, .split { display:flex; flex-wrap:wrap; gap:8px; }
+    .toolbar { margin: 12px 0; }
+    .btn {
+      appearance:none; border:1px solid var(--border); border-radius:10px; min-height:var(--touch); cursor:pointer; padding:10px 14px;
+      font: inherit; font-weight:700; display:inline-flex; align-items:center; gap:8px; color:var(--ink);
+      box-shadow:none;
+    }
+    body.epaper .btn { box-shadow:none; }
+    .btn:active { transform:translateY(1px); }
+    .btn-q { background:var(--surface-3); color:var(--ink); }
+    .btn-m { background:var(--surface-2); }
+    .btn-v { background:var(--surface-2); }
+    .btn-s { background:var(--surface-2); }
+    .btn-t { background:var(--surface-2); }
+    .btn-d { background:var(--surface-2); }
+    .btn-g { background:var(--surface-2); }
+    .btn-sm { min-height: 36px; padding:7px 11px; font-size:12px; }
+    .fp {
+      padding: 8px 12px; border-radius: 999px; border:1px solid var(--border); cursor:pointer; background:var(--surface);
+      color:var(--ink-light); font-weight:700; min-height:40px; display:inline-flex; align-items:center;
+      font-family:var(--ui-font); letter-spacing:.01em;
+    }
+    .fp.active { background: var(--surface-3); color: var(--ink); border-color: var(--border-light); }
+    .grid { display:grid; gap:12px; }
+    .grid-2 { grid-template-columns:1fr; }
+    .panel { background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px; }
+    .qh { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; font-weight:800; }
+    .badge { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:4px 8px; font-size:11px; font-weight:700; background:var(--surface-3); border:1px solid var(--border); color:var(--ink-light); font-family:var(--ui-font); }
+    .badge.blue { color:#d8edff; }
+    .badge.red { color:#ffd6d6; }
+    .notice { border-left:2px solid var(--border-light); padding:10px 12px; border-radius:10px; background:var(--surface); color:var(--ink-light); font-size:14px; }
+    .muted { color:var(--ink-light); }
+    .small { font-size:12px; }
+    .empty { color:var(--ink-light); border:1px dashed var(--border); border-radius:12px; padding:16px; background:rgba(255,255,255,.02); }
+    label { display:block; margin:10px 0 6px; color:var(--ink-light); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    input, select, textarea {
+      width:100%; background:var(--surface); border:1px solid var(--border); color:var(--ink); border-radius:10px;
+      padding:12px; min-height:var(--touch); font:inherit;
+    }
+    textarea { min-height: 140px; resize: vertical; line-height:1.75; }
+    #nodeText { font-family: var(--writing-font); font-size: 18px; line-height: 1.85; background: var(--surface); padding: 18px 20px; }
+    #nodeTitle { font-family: var(--ui-font); font-size: 14px; letter-spacing:.01em; }
+    .board-shell {
+      overflow-x:auto; overflow-y:hidden; padding-bottom:10px; cursor: grab; scrollbar-width: thin;
+      border-top:1px solid var(--border); margin-top:10px;
+    }
+    .board-shell.dragging { cursor:grabbing; user-select:none; }
+    .board {
+      display:flex; gap:12px; align-items:stretch; min-height: 290px; padding-top:10px; min-width:max-content;
+    }
+    .col {
+      width:min(85vw, 320px); background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px;
+      display:flex; flex-direction:column; gap:10px; flex:0 0 auto;
+    }
+    .col.current { border-color: var(--border-light); box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); }
+    body.epaper .col.current { box-shadow:none; }
+    .col-head { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 2px 6px; }
+    .col-title { font-size:12px; color:var(--ink-light); text-transform:uppercase; letter-spacing:.06em; font-weight:700; font-family:var(--ui-font); }
+    .stack { display:flex; flex-direction:column; gap:8px; }
+    .card {
+      border:1px solid var(--border); border-radius:10px; background:var(--surface-2); padding:12px; display:flex; flex-direction:column; gap:8px;
+      min-height: 118px; transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease; cursor:pointer;
+    }
+    .card:hover { border-color:var(--border-light); }
+    .card.selected { border-color:var(--border-light); box-shadow:0 0 0 1px rgba(255,255,255,.05); }
+    body.epaper .card.selected { box-shadow:none; }
+    .card-title { font-weight:700; line-height:1.45; font-size:16px; font-family: var(--writing-font); }
+    .card-text { color:var(--ink-light); font-size:14px; line-height:1.65; white-space:pre-wrap; }
+    .card-meta { display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--ink-dim); font-size:11px; }
+    .split-preview { display:grid; grid-template-columns:1fr; gap:8px; }
+    .editor-shell { max-width: 78ch; margin: 0 auto; }
+    .suggestion { border:1px solid var(--border); border-radius:12px; padding:10px; background:var(--surface); }
+    .entity-card, .review-card { border:1px solid var(--border); border-radius:10px; padding:12px; background:var(--surface); }
+    .entity-card.processed { opacity:.72; }
+    .mono { font-family:var(--ui-font); }
+    .divider { height:1px; background:rgba(255,255,255,.07); margin:8px 0; }
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:flex-end; justify-content:center; z-index:80; padding:12px;
+    }
+    .modal { width:min(920px, 100%); max-height:92vh; overflow:auto; background:var(--bg-mid); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .modal-title { font-size:18px; font-weight:800; margin-bottom:10px; }
+    .toast {
+      position:fixed; left:50%; bottom:16px; transform:translateX(-50%) translateY(20px); opacity:0;
+      background:#111; color:#fff; padding:10px 14px; border-radius:999px; z-index:100; transition:all .18s ease; max-width:min(90vw, 700px); text-align:center;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    @media (min-width: 900px) {
+      .grid-2 { grid-template-columns: minmax(0,1.5fr) minmax(340px, .9fr); }
+      .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .col { width: 300px; }
+      textarea#nodeText { min-height: 360px; max-width: 72ch; margin: 0 auto; display:block; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section class="hero">
+      <h1 class="title">Accidental Genius Studio</h1>
+      <div class="sub">Ruhige iA-Writer-inspirierte Oberfläche · Karteikarten-Board von links nach rechts · Fokus auf Text · Baskerville-/Schreibmaschinen-Schrift · Light + Dark + E-Paper</div>
+      <div class="stats">
+        <div class="stat"><div class="k">Braindumps</div><div class="v" id="statNodes">0</div></div>
+        <div class="stat"><div class="k">Abzweigungen</div><div class="v" id="statBranches">0</div></div>
+        <div class="stat"><div class="k">Story-Elemente</div><div class="v" id="statEntities">0</div></div>
+        <div class="stat"><div class="k">Archivierte Karten</div><div class="v" id="statArchived">0</div></div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <button class="fp" id="tabBoardBtn" onclick="switchTab('board')">🗂️ Board</button>
+      <button class="fp" id="tabEntitiesBtn" onclick="switchTab('entities')">🧷 Story-Elemente</button>
+      <button class="fp" id="tabStructureBtn" onclick="switchTab('structure')">🪜 Framework</button>
+      <button class="fp" id="tabArchiveBtn" onclick="switchTab('archive')">🗃️ Archiv</button>
+      <button class="fp" id="tabSettingsBtn" onclick="switchTab('settings')">⚙️ Einstellungen</button>
+    </div>
+
+    <div id="panel-board" class="panel"></div>
+    <div id="panel-entities" class="panel" style="display:none"></div>
+    <div id="panel-structure" class="panel" style="display:none"></div>
+    <div id="panel-archive" class="panel" style="display:none"></div>
+    <div id="panel-settings" class="panel" style="display:none"></div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this) closeModal()">
+    <div class="modal" id="modal"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var LKEY = 'accidental_genius_studio_v5_ia';
+    var GIST_TOKEN_KEY = 'ags_gist_token';
+    var GIST_ID_KEY = 'ags_gist_id';
+    var GIST_AUTO_KEY = 'ags_gist_auto';
+    var OPENAI_TOKEN_KEY = 'ags_openai_token';
+    var OPENAI_MODEL_KEY = 'ags_openai_model';
+    var GIST_FILENAME = 'accidental_genius_studio_data.json';
+
+    var currentTab = 'board';
+    var currentNodeId = '';
+    var gistAutoSyncTimer = null;
+    var boardDragState = null;
+
+    var S = {};
+
+    function todayIso() { return new Date().toISOString().slice(0, 10); }
+    function nowIso() { return new Date().toISOString(); }
+    function uid() { return 'id_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now().toString(36); }
+    function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    function truncate(v, n) { v = String(v || '').trim(); return v.length > n ? v.slice(0, n - 1) + '…' : v; }
+    function toast(msg) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function(){ el.classList.remove('show'); }, 2400); }
+    function openModal(html) { document.getElementById('modal').innerHTML = html; document.getElementById('modalBackdrop').style.display = 'flex'; }
+    function closeModal() { document.getElementById('modalBackdrop').style.display = 'none'; document.getElementById('modal').innerHTML = ''; }
+    function clipCopy(text, msg) {
+      navigator.clipboard.writeText(text).then(function(){ toast(msg || 'Kopiert.'); }).catch(function(){
+        openModal('<div class="modal-title">Text manuell kopieren</div><textarea>'+esc(text)+'</textarea><div class="btnrow" style="margin-top:12px"><button class="btn btn-g" onclick="closeModal()">Schließen</button></div>');
+      });
+    }
+    function paragraphList(text) { return String(text || '').split(/\n\s*\n/).map(function(x){ return x.trim(); }).filter(Boolean); }
+    function normalizeText(t) { return String(t || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+    function githubHeaders(token, includeContentType) {
+      var h = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' };
+      if (includeContentType) h['Content-Type'] = 'application/json';
+      return h;
+    }
+    function openAIHeaders(token) {
+      return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+    }
+    function getOpenAIToken() { return localStorage.getItem(OPENAI_TOKEN_KEY) || ''; }
+    function getOpenAIModel() { return localStorage.getItem(OPENAI_MODEL_KEY) || 'gpt-4.1-mini'; }
+    function gistGetToken() { return localStorage.getItem(GIST_TOKEN_KEY) || ''; }
+    function gistGetId() { return localStorage.getItem(GIST_ID_KEY) || ''; }
+    function gistGetAuto() { return localStorage.getItem(GIST_AUTO_KEY) === '1'; }
+
+    function defaultStructures() {
+      return [
+        {
+          id: 'nelson-9',
+          title: 'Antonya Nelson – 9 Schritte',
+          items: [
+            { id:'n1', title:'1. Persönliche Erfahrung', notes:'Rohmaterial aus echtem Erleben oder einer emotional glaubwürdigen Kernszene.' },
+            { id:'n2', title:'2. POV-Shift', notes:'Der Stoff wird aus einer anderen, produktiveren oder verfremdeten Perspektive gesehen.' },
+            { id:'n3', title:'3. Ticking Clock', notes:'Ein Zeitlimit oder ein Ereignis erzeugt Druck.' },
+            { id:'n4', title:'4. Symbolisches Objekt', notes:'Ein Ding trägt Thema, Konflikt oder Erinnerung.' },
+            { id:'n5', title:'5. Transition', notes:'Die Figur steht in einem Übergang oder Kipppunkt.' },
+            { id:'n6', title:'6. Weltereignis', notes:'Die private Szene wird in einen größeren historischen oder sozialen Kontext gestellt.' },
+            { id:'n7', title:'7. Binary Forces', notes:'Zwei gegensätzliche Kräfte, Figuren oder Werte reiben sich.' },
+            { id:'n8', title:'8. Physischer Raum', notes:'Der Raum ist nicht Kulisse, sondern trägt Bedeutung.' },
+            { id:'n9', title:'9. Repetition & Payoff', notes:'Etwas kehrt wieder und bekommt am Ende neue Wirkung.' }
+          ]
+        },
+        {
+          id: 'nine-step',
+          title: 'Generisches 9-Schritte-Modell',
+          items: [
+            { id:'s1', title:'1. Ausgangslage', notes:'Welt, Figur, Grundspannung.' },
+            { id:'s2', title:'2. Störung', notes:'Etwas bringt Bewegung hinein.' },
+            { id:'s3', title:'3. Ziel / Zug', notes:'Die Figur will etwas aktiv erreichen.' },
+            { id:'s4', title:'4. Komplikation', notes:'Widerstand, Rückschlag, innere Reibung.' },
+            { id:'s5', title:'5. Zuspitzung', notes:'Der Einsatz steigt.' },
+            { id:'s6', title:'6. Krise', notes:'Es kippt. Entscheidung wird nötig.' },
+            { id:'s7', title:'7. Entscheidung', notes:'Eine Richtung wird eingeschlagen.' },
+            { id:'s8', title:'8. Konsequenz', notes:'Die Entscheidung wirkt.' },
+            { id:'s9', title:'9. Nachhall', notes:'Restbild, Resonanz, Veränderung.' }
+          ]
+        },
+        {
+          id: 'frei',
+          title: 'Freies Schreiben',
+          items: [
+            { id:'free-1', title:'Freie Fläche', notes:'Kein Story-Raster. Nur Spurensuche.' }
+          ]
+        }
+      ];
+    }
+
+    function seedState() {
+      return {
+        version: 2,
+        mode: 'normal',
+        theme: 'dark',
+        fontProfile: 'baskerville',
+        nodes: [],
+        entities: [],
+        structures: defaultStructures(),
+        currentStructureId: 'nelson-9',
+        currentNodeId: '',
+        _lastExported: nowIso()
+      };
+    }
+
+    function createRootNode(silent) {
+      var root = {
+        id: uid(), parentId: '', title: 'Start-Braindump', text: '', summary: '', beatId: '',
+        createdAt: nowIso(), updatedAt: nowIso(), archived: false, splitHistory: []
+      };
+      S.nodes = [root];
+      S.currentNodeId = root.id;
+      currentNodeId = root.id;
+      save(true);
+      if (!silent) toast('Startkarte angelegt.');
+    }
+
+    function ensureDefaults() {
+      if (!S || typeof S !== 'object') S = seedState();
+      if (!Array.isArray(S.nodes)) S.nodes = [];
+      if (!Array.isArray(S.entities)) S.entities = [];
+      if (!Array.isArray(S.structures) || !S.structures.length) S.structures = defaultStructures();
+      if (!S.currentStructureId) S.currentStructureId = S.structures[0].id;
+      if (!S.mode) S.mode = 'normal';
+      if (!S.theme) S.theme = 'dark';
+      if (!S.fontProfile) S.fontProfile = 'baskerville';
+      if (!S.nodes.length) createRootNode(true);
+      if (!S.currentNodeId || !getNode(S.currentNodeId)) S.currentNodeId = getRootNodeId();
+      currentNodeId = S.currentNodeId;
+    }
+
+    function load() {
+      try {
+        var raw = localStorage.getItem(LKEY);
+        S = raw ? JSON.parse(raw) : seedState();
+      } catch (e) {
+        S = seedState();
+      }
+      ensureDefaults();
+      applyAppearance();
+    }
+
+    function save(skipSync) {
+      S.currentNodeId = currentNodeId;
+      S._lastExported = nowIso();
+      try { localStorage.setItem(LKEY, JSON.stringify(S)); } catch (e) {}
+      render();
+      if (!skipSync) gistAutoSyncDebounced();
+    }
+
+    function applyAppearance() {
+      document.body.classList.toggle('light', S.theme === 'light');
+      document.body.classList.toggle('epaper', S.theme === 'epaper');
+      document.body.classList.toggle('font-baskerville', S.fontProfile === 'baskerville');
+      document.body.classList.toggle('font-typewriter', S.fontProfile === 'typewriter');
+    }
+    function getNode(id) { return S.nodes.find(function(n){ return n.id === id; }) || null; }
+    function getRootNodeId() { var root = S.nodes.find(function(n){ return !n.parentId; }); return root ? root.id : ''; }
+    function getChildren(id) { return S.nodes.filter(function(n){ return n.parentId === id && !n.archived; }); }
+    function getParent(node) { return node && node.parentId ? getNode(node.parentId) : null; }
+    function getPath(nodeId) {
+      var out = [], cur = getNode(nodeId);
+      while (cur) { out.unshift(cur); cur = getParent(cur); }
+      return out;
+    }
+    function getSiblings(node) {
+      if (!node) return [];
+      if (!node.parentId) return S.nodes.filter(function(n){ return !n.parentId && !n.archived; });
+      return getChildren(node.parentId);
+    }
+    function getBranchCount() { return S.nodes.filter(function(n){ return n.parentId && !n.archived; }).length; }
+    function getArchivedCards() {
+      var total = 0;
+      S.entities.forEach(function(e){ (e.cards || []).forEach(function(c){ if (c.archived) total++; }); });
+      return total;
+    }
+    function updateStats() {
+      document.getElementById('statNodes').textContent = S.nodes.filter(function(n){ return !n.archived; }).length;
+      document.getElementById('statBranches').textContent = getBranchCount();
+      document.getElementById('statEntities').textContent = S.entities.length;
+      document.getElementById('statArchived').textContent = getArchivedCards();
+    }
+
+    function switchTab(tab) { currentTab = tab; render(); }
+
+    function render() {
+      ensureDefaults();
+      applyAppearance();
+      updateStats();
+      ['board','entities','structure','archive','settings'].forEach(function(tab){
+        document.getElementById('panel-' + tab).style.display = currentTab === tab ? 'block' : 'none';
+        document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Btn').classList.toggle('active', currentTab === tab);
+      });
+      renderBoardPanel();
+      renderEntitiesPanel();
+      renderStructurePanel();
+      renderArchivePanel();
+      renderSettingsPanel();
+    }
+
+    function renderBoardPanel() {
+      var node = getNode(currentNodeId) || getNode(getRootNodeId());
+      if (!node) return;
+      currentNodeId = node.id;
+      var path = getPath(node.id);
+      var cols = [];
+      cols.push({ title:'Startkarten', cards: S.nodes.filter(function(n){ return !n.parentId && !n.archived; }), selectedId: path[0] ? path[0].id : '' });
+      for (var i = 1; i < path.length; i++) {
+        cols.push({ title:'Spalte ' + (i + 1), cards: getChildren(path[i - 1].id), selectedId: path[i].id });
+      }
+      cols.push({ title:'Nächste Karten rechts', cards: getChildren(node.id), selectedId: '' });
+
+      document.getElementById('panel-board').innerHTML = '' +
+        '<div class="grid grid-2">' +
+          '<div>' +
+            '<div class="qh"><span>Karteikarten-Board von links nach rechts</span><span class="badge">Navigation: Maus ziehen · Pfeiltasten</span></div>' +
+            '<div class="notice">Ja: Die App arbeitet jetzt bewusst in einer <strong>Gingko-ähnlichen Optik</strong>. Links steht der bisherige Pfad, die aktuell gewählte Karte ist markiert, und rechts daneben erscheinen ihre möglichen Abzweigungen als neue Karten-Spalte. Kein nach unten wachsender Baum mehr. Die Farbigkeit ist absichtlich gedämpft und näher an deiner Snowflake-App.</div>' +
+            '<div class="toolbar" style="margin-top:10px">' +
+              '<button class="btn btn-v" onclick="newChildNode(currentNodeId)">➕ Kindkarte</button>' +
+              '<button class="btn btn-g" onclick="newSiblingNode(currentNodeId)">↔ Alternative Richtung</button>' +
+              '<button class="btn btn-m" onclick="openSplitModal(currentNodeId)">🪄 Aufsplitten</button>' +
+              '<button class="btn btn-s" onclick="runOpenAISplit(currentNodeId)">🤖 OpenAI-Split</button>' +
+              '<button class="btn btn-q" onclick="copySplitPrompt(currentNodeId)">📋 Prompt kopieren</button>' +
+            '</div>' +
+            '<div class="board-shell" id="boardShell">' +
+              '<div class="board" id="board">' + cols.map(function(col, idx){ return renderColumn(col, idx === cols.length - 2); }).join('') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' + renderEditor(node) + '</div>' +
+        '</div>';
+      bindBoardDrag();
+      setTimeout(scrollCurrentIntoView, 20);
+    }
+
+    function renderColumn(col, isCurrentLevel) {
+      return '<div class="col ' + (isCurrentLevel ? 'current' : '') + '">' +
+        '<div class="col-head"><div class="col-title">' + esc(col.title) + '</div><span class="badge">' + col.cards.length + '</span></div>' +
+        '<div class="stack">' + (col.cards.length ? col.cards.map(function(card){ return renderBoardCard(card, card.id === col.selectedId); }).join('') : '<div class="empty">Noch keine Karten.</div>') + '</div>' +
+      '</div>';
+    }
+
+    function renderBoardCard(card, selected) {
+      var kids = getChildren(card.id).length;
+      return '<div class="card ' + (selected ? 'selected' : '') + '" data-node-id="' + esc(card.id) + '" onclick="selectNode(\'' + card.id + '\')">' +
+        '<div class="card-title">' + esc(card.title || 'Unbenannt') + '</div>' +
+        '<div class="card-text">' + esc(truncate(card.summary || card.text || 'Leere Karte.', 170)) + '</div>' +
+        '<div class="card-meta"><span>' + esc(getBeatTitle(card.beatId) || 'Freier Thread') + '</span><span>' + kids + ' →</span></div>' +
+      '</div>';
+    }
+
+    function renderEditor(node) {
+      return '' +
+        '<div class="panel" style="padding:0; background:none; border:none">' +
+          '<div class="qh"><span>Aktive Karte</span><span class="badge blue">' + esc(node.parentId ? 'Thread' : 'Wurzel') + '</span></div>' +
+          '<label>Titel</label><input id="nodeTitle" value="' + esc(node.title) + '" placeholder="z. B. Streit am Bahnhof" />' +
+          '<label>Volltext</label><textarea id="nodeText" placeholder="Braindump hier hineinschreiben ...">' + esc(node.text) + '</textarea>' +
+          '<label>Kurzfokus / Zusammenfassung</label><textarea id="nodeSummary" placeholder="Was ist die aktuelle Spur dieses Threads?">' + esc(node.summary || '') + '</textarea>' +
+          '<label>Rolle / Framework-Schritt (optional)</label>' + renderBeatSelect(node.beatId, 'nodeBeat') +
+          '<div class="btnrow" style="margin-top:12px">' +
+            '<button class="btn btn-v" onclick="saveCurrentNode()">💾 Speichern</button>' +
+            '<button class="btn btn-m" onclick="openSplitModal(currentNodeId)">🪄 Splitten</button>' +
+            '<button class="btn btn-s" onclick="runOpenAISplit(currentNodeId)">🤖 OpenAI</button>' +
+            (S.mode === 'prosa' ? '<button class="btn btn-t" onclick="attachNodeToEntities(currentNodeId)">🧷 An Story-Elemente hängen</button>' : '') +
+          '</div>' +
+          '<div class="divider"></div>' +
+          '<div class="notice">Die aktive Karte ist weiter der zentrale Prompt-Kontext. Direkter OpenAI-Split ist Standard; Prompt kopieren bleibt bewusst nur die Fallback-Lösung.</div>' +
+          '<div class="divider"></div>' +
+          '<div class="qh"><span>Pfad</span><span class="badge">' + getPath(node.id).length + ' Karten</span></div>' +
+          '<div class="stack">' + getPath(node.id).map(function(n, idx){
+            return '<div class="entity-card"><div class="small muted">Ebene ' + (idx + 1) + '</div><div><strong>' + esc(n.title) + '</strong></div><div class="small muted" style="margin-top:6px">' + esc(truncate(n.summary || n.text, 130)) + '</div></div>';
+          }).join('') + '</div>' +
+        '</div>';
+    }
+
+    function renderBeatSelect(value, id) {
+      var structure = S.structures.find(function(s){ return s.id === S.currentStructureId; }) || S.structures[0];
+      return '<select id="' + id + '"><option value="">— kein Strukturschritt —</option>' + structure.items.map(function(item){
+        return '<option value="' + esc(item.id) + '" ' + (item.id === value ? 'selected' : '') + '>' + esc(item.title) + '</option>';
+      }).join('') + '</select>';
+    }
+
+    function getBeatTitle(beatId) {
+      var structure = S.structures.find(function(s){ return s.id === S.currentStructureId; }) || S.structures[0];
+      var found = (structure.items || []).find(function(item){ return item.id === beatId; });
+      return found ? found.title : '';
+    }
+
+    function selectNode(nodeId) {
+      if (!getNode(nodeId)) return;
+      currentNodeId = nodeId;
+      S.currentNodeId = nodeId;
+      save(true);
+    }
+
+    function saveCurrentNode() {
+      var node = getNode(currentNodeId);
+      if (!node) return;
+      node.title = document.getElementById('nodeTitle').value.trim() || 'Unbenannte Karte';
+      node.text = document.getElementById('nodeText').value;
+      node.summary = document.getElementById('nodeSummary').value;
+      node.beatId = document.getElementById('nodeBeat').value;
+      node.updatedAt = nowIso();
+      save();
+      toast('Karte gespeichert.');
+    }
+
+    function newChildNode(parentId) {
+      var parent = getNode(parentId); if (!parent) return;
+      var node = { id: uid(), parentId: parent.id, title:'Neue Abzweigung', text:'', summary:'', beatId:'', createdAt:nowIso(), updatedAt:nowIso(), archived:false, splitHistory:[] };
+      S.nodes.push(node); currentNodeId = node.id; save(); toast('Neue Kindkarte angelegt.');
+    }
+
+    function newSiblingNode(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var sib = { id: uid(), parentId: node.parentId || '', title:'Alternative Richtung', text:'', summary:'', beatId:'', createdAt:nowIso(), updatedAt:nowIso(), archived:false, splitHistory:[] };
+      S.nodes.push(sib); currentNodeId = sib.id; save(); toast('Alternative Richtung angelegt.');
+    }
+
+    function heuristicSplit(text) {
+      var paras = paragraphList(text);
+      if (!paras.length) return [];
+      var out = [];
+      paras.slice(0, 6).forEach(function(p, idx){
+        var first = p.split(/(?<=[.!?])\s+/)[0] || p;
+        out.push({ title: autoTitle(first, idx), summary: truncate(first, 120), starttext: p.trim() });
+      });
+      if (out.length === 1) {
+        return [
+          { title:'Konflikt / Widerstand', summary:'Welche Reibung steckt im Material?', starttext:text.slice(0, 260) },
+          { title:'Bild / Motiv', summary:'Welche Bildspur lässt sich herauslösen?', starttext:text.slice(Math.max(0, text.length - 260)) },
+          { title:'Nächster Zug', summary:'Welche Richtung lohnt als nächste Karte?', starttext:'' }
+        ];
+      }
+      return out;
+    }
+
+    function autoTitle(text, idx) {
+      var cleaned = String(text || '').replace(/[\n\r]+/g, ' ').trim();
+      if (!cleaned) return 'Thread ' + (idx + 1);
+      var words = cleaned.split(/\s+/).slice(0, 6).join(' ');
+      return words.length > 48 ? words.slice(0, 45) + '…' : words;
+    }
+
+    function openSplitModal(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var suggestions = heuristicSplit(node.text || node.summary || '');
+      openModal('' +
+        '<div class="modal-title">Braindump aufsplitten</div>' +
+        '<div class="notice">Erst lokaler MVP: Vorschläge direkt anlegen. Alternativ OpenAI oder Prompt-Kopie. Die Karte bleibt immer vollständig erhalten.</div>' +
+        '<div class="split-preview" style="margin-top:12px">' + (suggestions.length ? suggestions.map(function(s, idx){
+          return '<div class="suggestion"><div class="qh"><span>' + esc(s.title) + '</span><span class="badge">' + (idx + 1) + '</span></div><div class="small muted">' + esc(s.summary) + '</div><div class="small" style="margin-top:8px">' + esc(truncate(s.starttext, 190)) + '</div></div>';
+        }).join('') : '<div class="empty">Noch zu wenig Material für lokale Vorschläge.</div>') + '</div>' +
+        '<div class="btnrow" style="margin-top:14px">' +
+          '<button class="btn btn-v" onclick="acceptHeuristicSplit(\'' + node.id + '\')">Lokale Vorschläge anlegen</button>' +
+          '<button class="btn btn-s" onclick="runOpenAISplit(\'' + node.id + '\')">OpenAI-Split</button>' +
+          '<button class="btn btn-q" onclick="copySplitPrompt(\'' + node.id + '\')">Prompt kopieren</button>' +
+          '<button class="btn btn-g" onclick="openSplitImportModal(\'' + node.id + '\')">Antwort importieren</button>' +
+        '</div>'
+      );
+    }
+
+    function acceptHeuristicSplit(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var suggestions = heuristicSplit(node.text || node.summary || '');
+      if (!suggestions.length) return toast('Noch kein Material zum Splitten.');
+      createThreadsFromParsed(node, suggestions, 'lokal');
+      closeModal();
+    }
+
+    function buildProjectContext() {
+      if (S.mode !== 'prosa') return 'Kein Prosa-Kontext aktiv.';
+      if (!S.entities.length) return 'Noch keine Story-Elemente vorhanden.';
+      return S.entities.map(function(e){
+        var cards = (e.cards || []).filter(function(c){ return !c.archived; }).slice(-4).map(function(c){ return '- ' + c.title + ': ' + truncate(c.text, 160); }).join('\n');
+        return '[' + e.type + '] ' + e.title + '\nProfil: ' + (e.profile || '') + (cards ? '\nKarten:\n' + cards : '');
+      }).join('\n\n');
+    }
+
+    function buildSplitPrompt(node) {
+      return [
+        'Du zerlegst einen Braindump in 3 bis 6 präzise, weiterführende Threads.',
+        '',
+        'REGELN:',
+        '- Schreibe knapp und konkret.',
+        '- Der Ursprungstext bleibt unangetastet.',
+        '- Jeder Thread bekommt TITEL, ZUSAMMENFASSUNG, STARTTEXT.',
+        '- Wenn der Modus "prosa" ist, beziehe Figuren, Orte, Szenen, Gegenstände und Strukturschritte ein, aber nur wenn es wirklich passt.',
+        '',
+        'AUSGABEFORMAT:',
+        'THREAD:',
+        'titel: ...',
+        'zusammenfassung: ...',
+        'starttext: ...',
+        '---',
+        '',
+        'MODUS: ' + S.mode,
+        'AKTUELLER STRUKTURSCHRITT: ' + (getBeatTitle(node.beatId) || 'kein Strukturschritt'),
+        '',
+        'PROJEKTKONTEXT:',
+        buildProjectContext(),
+        '',
+        'TITEL:',
+        node.title,
+        '',
+        'ZUSAMMENFASSUNG:',
+        node.summary || '(leer)',
+        '',
+        'VOLLTEXT:',
+        node.text || '(leer)'
+      ].join('\n');
+    }
+
+    function copySplitPrompt(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      clipCopy(buildSplitPrompt(node), 'Split-Prompt kopiert.');
+    }
+
+    function openSplitImportModal(nodeId, prefill) {
+      openModal('' +
+        '<div class="modal-title">KI-Antwort importieren</div>' +
+        '<div class="notice">Erwartetes Format: THREAD / titel / zusammenfassung / starttext. Falls der OpenAI-Call erfolgreich war, ist das Feld bereits vorgefüllt.</div>' +
+        '<textarea id="splitImportText">' + esc(prefill || '') + '</textarea>' +
+        '<div class="btnrow" style="margin-top:12px">' +
+          '<button class="btn btn-v" onclick="importSplitResponse(\'' + nodeId + '\')">Importieren</button>' +
+          '<button class="btn btn-g" onclick="closeModal()">Schließen</button>' +
+        '</div>'
+      );
+    }
+
+    function parseThreadsFromText(text) {
+      var blocks = String(text || '').split(/\n---+\n/).map(function(x){ return x.trim(); }).filter(Boolean);
+      var out = [];
+      blocks.forEach(function(block){
+        var title = matchValue(block, /titel:\s*(.+)/i);
+        var summary = matchValue(block, /zusammenfassung:\s*([\s\S]+?)(?:\nstarttext:|$)/i);
+        var starttext = matchValue(block, /starttext:\s*([\s\S]+)/i);
+        if (title) out.push({ title:title.trim(), summary:(summary || '').trim(), starttext:(starttext || '').trim() });
+      });
+      return out;
+    }
+    function matchValue(text, rx) { var m = String(text || '').match(rx); return m ? m[1] : ''; }
+
+    function createThreadsFromParsed(node, threads, kind) {
+      threads.forEach(function(t){
+        S.nodes.push({ id:uid(), parentId:node.id, title:t.title || 'Neuer Thread', text:t.starttext || '', summary:t.summary || '', beatId:'', createdAt:nowIso(), updatedAt:nowIso(), archived:false, splitHistory:[] });
+      });
+      node.splitHistory = node.splitHistory || [];
+      node.splitHistory.push({ at: nowIso(), kind: kind || 'import', created: threads.length });
+      save();
+      toast(threads.length + ' Threads angelegt.');
+    }
+
+    function importSplitResponse(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var text = document.getElementById('splitImportText').value;
+      var threads = parseThreadsFromText(text);
+      if (!threads.length) return toast('Kein gültiges THREAD-Format erkannt.');
+      createThreadsFromParsed(node, threads, 'ki');
+      closeModal();
+      currentNodeId = node.id;
+      save(true);
+    }
+
+    async function runOpenAISplit(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var token = getOpenAIToken();
+      var model = getOpenAIModel();
+      if (!token) {
+        currentTab = 'settings'; render();
+        return toast('Bitte zuerst deinen OpenAI-API-Token eintragen.');
+      }
+      saveCurrentNode();
+      openModal('<div class="modal-title">OpenAI-Split läuft</div><div class="notice">Die App sendet den strukturierten Split-Prompt direkt an dein Modell. Falls etwas schiefgeht, bleibt Prompt kopieren die Notlösung.</div><div style="margin-top:12px" class="mono small">Modell: ' + esc(model) + '</div>');
+      try {
+        var res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: openAIHeaders(token),
+          body: JSON.stringify({
+            model: model,
+            temperature: 0.8,
+            messages: [
+              { role: 'system', content: 'Du bist ein präziser Splitter für Braindumps und gibst exakt das verlangte THREAD-Format aus.' },
+              { role: 'user', content: buildSplitPrompt(node) }
+            ]
+          })
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error((data && data.error && data.error.message) ? data.error.message : ('HTTP ' + res.status));
+        var text = (((data || {}).choices || [])[0] || {}).message ? data.choices[0].message.content : '';
+        if (!text) throw new Error('Keine Textantwort erhalten.');
+        openSplitImportModal(nodeId, text);
+        toast('OpenAI-Antwort erhalten. Bitte kurz prüfen und importieren.');
+      } catch (e) {
+        closeModal();
+        openModal('<div class="modal-title">OpenAI-Split fehlgeschlagen</div><div class="notice">Fehler: ' + esc(e.message || String(e)) + '</div><div class="btnrow" style="margin-top:12px"><button class="btn btn-q" onclick="copySplitPrompt(\'' + nodeId + '\')">Prompt kopieren</button><button class="btn btn-g" onclick="closeModal()">Schließen</button></div>');
+      }
+    }
+
+    function renderEntitiesPanel() {
+      var html = '' +
+        '<div class="qh"><span>Story-Elemente</span><span class="badge">Nur im Prosa-Modus relevant</span></div>' +
+        '<div class="toolbar">' +
+          '<button class="btn btn-v" onclick="openEntityModal()">➕ Story-Element</button>' +
+          '<button class="btn btn-s" onclick="cleanupAllEntities()">🧹 Cleanup-Vorschlag für ausgewählte Profile</button>' +
+        '</div>' +
+        '<div class="notice">Im Prosa-Modus kannst du Volltextausschnitte als Karten an Figuren, Orte, Szenen, Gegenstände oder freie Kategorien hängen. Beim Cleanup wird daraus ein Vorschlag erzeugt, den du wie einen kleinen Merge annehmen oder verwerfen kannst.</div>' +
+        '<div style="margin-top:12px" class="stack">' +
+          (S.entities.length ? S.entities.map(renderEntityBox).join('') : '<div class="empty">Noch keine Story-Elemente angelegt.</div>') +
+        '</div>';
+      document.getElementById('panel-entities').innerHTML = html;
+    }
+
+    function renderEntityBox(entity) {
+      var cards = entity.cards || [];
+      var active = cards.filter(function(c){ return !c.archived; });
+      return '<div class="entity-card">' +
+        '<div class="qh"><span>' + esc(entity.title) + '</span><span class="badge">' + esc(entity.type) + '</span></div>' +
+        '<div class="small muted">Profil</div><div style="white-space:pre-wrap">' + esc(entity.profile || 'Noch kein Profil.') + '</div>' +
+        '<div class="btnrow" style="margin-top:10px">' +
+          '<button class="btn btn-sm btn-m" onclick="openEntityModal(\'' + entity.id + '\')">Bearbeiten</button>' +
+          '<button class="btn btn-sm btn-s" onclick="runEntityCleanup(\'' + entity.id + '\')">Cleanup-Vorschlag</button>' +
+        '</div>' +
+        '<div class="divider"></div>' +
+        '<div class="small muted">Aktive Karten: ' + active.length + '</div>' +
+        '<div class="stack" style="margin-top:8px">' + (active.length ? active.map(function(card, idx){
+          return '<div class="entity-card ' + (card.archived ? 'processed' : '') + '"><div class="qh"><span>' + esc(card.title || ('Karte ' + (idx + 1))) + '</span><span class="badge">' + esc(card.sourceTitle || 'Quelle') + '</span></div><div class="small" style="white-space:pre-wrap">' + esc(truncate(card.text, 260)) + '</div></div>';
+        }).join('') : '<div class="empty">Noch keine aktiven Karten an diesem Element.</div>') + '</div>' +
+      '</div>';
+    }
+
+    function openEntityModal(entityId) {
+      var entity = entityId ? S.entities.find(function(e){ return e.id === entityId; }) : null;
+      openModal('' +
+        '<div class="modal-title">' + (entity ? 'Story-Element bearbeiten' : 'Story-Element anlegen') + '</div>' +
+        '<label>Titel</label><input id="entityTitle" value="' + esc(entity ? entity.title : '') + '" />' +
+        '<label>Typ</label><select id="entityType">' + ['Figur','Ort','Szene','Gegenstand','Motiv','Freie Kategorie'].map(function(t){ return '<option value="' + esc(t) + '" ' + ((entity && entity.type === t) ? 'selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>' +
+        '<label>Profil</label><textarea id="entityProfile">' + esc(entity ? entity.profile : '') + '</textarea>' +
+        '<div class="btnrow" style="margin-top:12px">' +
+          '<button class="btn btn-v" onclick="saveEntity(\'' + (entity ? entity.id : '') + '\')">Speichern</button>' +
+          '<button class="btn btn-g" onclick="closeModal()">Abbrechen</button>' +
+        '</div>'
+      );
+    }
+
+    function saveEntity(entityId) {
+      var title = document.getElementById('entityTitle').value.trim();
+      if (!title) return toast('Titel fehlt.');
+      var type = document.getElementById('entityType').value;
+      var profile = document.getElementById('entityProfile').value;
+      if (entityId) {
+        var e = S.entities.find(function(x){ return x.id === entityId; });
+        if (!e) return;
+        e.title = title; e.type = type; e.profile = profile; e.updatedAt = nowIso();
+      } else {
+        S.entities.unshift({ id:uid(), title:title, type:type, profile:profile, cards:[], createdAt:nowIso(), updatedAt:nowIso() });
+      }
+      closeModal(); save(); toast('Story-Element gespeichert.');
+    }
+
+    function attachNodeToEntities(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      if (!S.entities.length) return toast('Lege zuerst mindestens ein Story-Element an.');
+      openModal('' +
+        '<div class="modal-title">Karte an Story-Elemente hängen</div>' +
+        '<div class="notice">MVP-Entscheidung: Du wählst die Ziel-Elemente direkt aus. So bleibt der Volltext erhalten und die Zuordnung ist schnell prüfbar.</div>' +
+        '<label>Kartentitel</label><input id="attachCardTitle" value="' + esc(node.title) + '" />' +
+        '<label>Textausschnitt / Volltext</label><textarea id="attachCardText">' + esc(node.text || node.summary || '') + '</textarea>' +
+        '<label>Ziel-Elemente</label>' + S.entities.map(function(e){
+          return '<label style="display:flex; gap:8px; align-items:center; text-transform:none; font-size:14px"><input type="checkbox" class="attachEntityChk" value="' + esc(e.id) + '" style="width:auto; min-height:auto" /> <span>' + esc(e.type + ': ' + e.title) + '</span></label>';
+        }).join('') +
+        '<div class="btnrow" style="margin-top:12px"><button class="btn btn-v" onclick="confirmAttachNode(\'' + nodeId + '\')">Anhängen</button><button class="btn btn-g" onclick="closeModal()">Abbrechen</button></div>'
+      );
+    }
+
+    function confirmAttachNode(nodeId) {
+      var node = getNode(nodeId); if (!node) return;
+      var ids = Array.prototype.slice.call(document.querySelectorAll('.attachEntityChk:checked')).map(function(x){ return x.value; });
+      if (!ids.length) return toast('Bitte mindestens ein Story-Element wählen.');
+      var title = document.getElementById('attachCardTitle').value.trim() || node.title;
+      var text = document.getElementById('attachCardText').value.trim() || node.text || node.summary;
+      ids.forEach(function(id){
+        var entity = S.entities.find(function(e){ return e.id === id; });
+        if (!entity) return;
+        entity.cards = entity.cards || [];
+        entity.cards.unshift({ id:uid(), title:title, text:text, sourceNodeId:node.id, sourceTitle:node.title, createdAt:nowIso(), archived:false });
+        entity.updatedAt = nowIso();
+      });
+      closeModal(); save(); toast('Karte angehängt.');
+    }
+
+    function buildEntityCleanupPrompt(entity) {
+      var active = (entity.cards || []).filter(function(c){ return !c.archived; });
+      return [
+        'Du verdichtest ein Story-Profil anhand bestehendem Profiltext und unbearbeiteten Karten.',
+        'Gib nur zwei Blöcke aus:',
+        'NEUES_PROFIL:',
+        '...',
+        '---',
+        'ÄNDERUNGEN:',
+        '- ...',
+        '',
+        'ELEMENT: ' + entity.type + ' / ' + entity.title,
+        '',
+        'AKTUELLES_PROFIL:',
+        entity.profile || '(leer)',
+        '',
+        'UNVERARBEITETE KARTEN:',
+        active.map(function(c, idx){ return '[' + (idx + 1) + '] ' + c.title + '\n' + c.text; }).join('\n\n')
+      ].join('\n');
+    }
+
+    async function runEntityCleanup(entityId) {
+      var entity = S.entities.find(function(e){ return e.id === entityId; }); if (!entity) return;
+      var active = (entity.cards || []).filter(function(c){ return !c.archived; });
+      if (!active.length) return toast('Keine aktiven Karten für dieses Element.');
+      var token = getOpenAIToken();
+      if (!token) {
+        openModal('<div class="modal-title">Cleanup-Prompt</div><textarea>' + esc(buildEntityCleanupPrompt(entity)) + '</textarea><div class="btnrow" style="margin-top:12px"><button class="btn btn-q" onclick="clipCopy(buildEntityCleanupPrompt(S.entities.find(function(e){ return e.id === \'' + entity.id + '\'; })), \"Cleanup-Prompt kopiert.\")">Prompt kopieren</button><button class="btn btn-g" onclick="closeModal()">Schließen</button></div>');
+        return;
+      }
+      openModal('<div class="modal-title">Cleanup läuft</div><div class="notice">Es wird ein neuer Profilvorschlag erzeugt. Danach entscheidest du, ob du ihn annimmst.</div>');
+      try {
+        var res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method:'POST', headers: openAIHeaders(token),
+          body: JSON.stringify({
+            model: getOpenAIModel(), temperature: 0.4,
+            messages:[
+              { role:'system', content:'Du verdichtest Profile präzise und ohne Fluff. Gib exakt das angeforderte Format zurück.' },
+              { role:'user', content: buildEntityCleanupPrompt(entity) }
+            ]
+          })
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error((data && data.error && data.error.message) ? data.error.message : ('HTTP ' + res.status));
+        var text = (((data || {}).choices || [])[0] || {}).message ? data.choices[0].message.content : '';
+        if (!text) throw new Error('Leere Antwort.');
+        openEntityCleanupReview(entityId, text);
+      } catch (e) {
+        closeModal();
+        openModal('<div class="modal-title">Cleanup fehlgeschlagen</div><div class="notice">' + esc(e.message || String(e)) + '</div><div class="btnrow" style="margin-top:12px"><button class="btn btn-q" onclick="clipCopy(buildEntityCleanupPrompt(S.entities.find(function(e){ return e.id === \'' + entity.id + '\'; })), \"Cleanup-Prompt kopiert.\")">Prompt kopieren</button><button class="btn btn-g" onclick="closeModal()">Schließen</button></div>');
+      }
+    }
+
+    function parseCleanupResponse(text) {
+      var profile = matchValue(text, /NEUES_PROFIL:\s*([\s\S]+?)(?:\n---|$)/i).trim();
+      var changes = matchValue(text, /ÄNDERUNGEN:\s*([\s\S]+)/i).trim();
+      return { profile: profile, changes: changes };
+    }
+
+    function openEntityCleanupReview(entityId, responseText) {
+      var entity = S.entities.find(function(e){ return e.id === entityId; }); if (!entity) return;
+      var parsed = parseCleanupResponse(responseText);
+      openModal('' +
+        '<div class="modal-title">Cleanup-Review</div>' +
+        '<div class="grid grid-2">' +
+          '<div class="review-card"><div class="small muted">Bisheriges Profil</div><div style="white-space:pre-wrap">' + esc(entity.profile || '(leer)') + '</div></div>' +
+          '<div class="review-card"><div class="small muted">Vorgeschlagenes neues Profil</div><textarea id="cleanupProposed">' + esc(parsed.profile || '') + '</textarea></div>' +
+        '</div>' +
+        '<label>Änderungen</label><textarea id="cleanupChanges">' + esc(parsed.changes || '') + '</textarea>' +
+        '<div class="btnrow" style="margin-top:12px">' +
+          '<button class="btn btn-v" onclick="acceptEntityCleanup(\'' + entity.id + '\')">Änderungen annehmen</button>' +
+          '<button class="btn btn-d" onclick="closeModal()">Verwerfen</button>' +
+        '</div>'
+      );
+    }
+
+    function acceptEntityCleanup(entityId) {
+      var entity = S.entities.find(function(e){ return e.id === entityId; }); if (!entity) return;
+      entity.profile = document.getElementById('cleanupProposed').value;
+      (entity.cards || []).forEach(function(c){ if (!c.archived) c.archived = true; });
+      entity.updatedAt = nowIso();
+      closeModal(); save(); toast('Cleanup übernommen und Karten archiviert.');
+    }
+
+    function cleanupAllEntities() {
+      if (!S.entities.length) return toast('Keine Story-Elemente vorhanden.');
+      currentTab = 'entities'; render();
+      toast('Nutze den Cleanup pro Story-Element, damit du jeden Merge einzeln prüfen kannst.');
+    }
+
+    function renderStructurePanel() {
+      var structure = S.structures.find(function(s){ return s.id === S.currentStructureId; }) || S.structures[0];
+      document.getElementById('panel-structure').innerHTML = '' +
+        '<div class="qh"><span>Framework-Ebene</span><span class="badge">Optional</span></div>' +
+        '<div class="toolbar">' + S.structures.map(function(s){
+          return '<button class="fp ' + (s.id === S.currentStructureId ? 'active' : '') + '" onclick="setStructure(\'' + s.id + '\')">' + esc(s.title) + '</button>';
+        }).join('') + '</div>' +
+        '<div class="notice">Die früher unklaren "Stufen" sind jetzt konkrete Rollen. Du kannst also z. B. einer Karte direkt <strong>Ticking Clock</strong>, <strong>POV-Shift</strong> oder <strong>Symbolisches Objekt</strong> zuweisen – oder komplett frei schreiben.</div>' +
+        '<div class="stack" style="margin-top:12px">' + structure.items.map(function(item){
+          return '<div class="entity-card"><div class="qh"><span>' + esc(item.title) + '</span><span class="badge">Beat</span></div><div class="small muted">' + esc(item.notes || '') + '</div></div>';
+        }).join('') + '</div>';
+    }
+
+    function setStructure(id) { S.currentStructureId = id; save(true); }
+
+    function renderArchivePanel() {
+      var archived = [];
+      S.entities.forEach(function(e){ (e.cards || []).forEach(function(c){ if (c.archived) archived.push({ entity:e, card:c }); }); });
+      document.getElementById('panel-archive').innerHTML = '' +
+        '<div class="qh"><span>Archivierte Profilkarten</span><span class="badge">' + archived.length + '</span></div>' +
+        (archived.length ? '<div class="stack">' + archived.map(function(row){
+          return '<div class="entity-card"><div class="qh"><span>' + esc(row.card.title) + '</span><span class="badge">' + esc(row.entity.title) + '</span></div><div class="small muted">Quelle: ' + esc(row.card.sourceTitle || 'unbekannt') + '</div><div style="margin-top:8px; white-space:pre-wrap">' + esc(truncate(row.card.text, 320)) + '</div></div>';
+        }).join('') + '</div>' : '<div class="empty">Noch keine archivierten Karten.</div>');
+    }
+
+    function renderSettingsPanel() {
+      document.getElementById('panel-settings').innerHTML = '' +
+        '<div class="qh"><span>Einstellungen</span><span class="badge">lokal im Browser</span></div>' +
+        '<div class="grid grid-2">' +
+          '<div>' +
+            '<label>Modus</label><select id="modeSelect"><option value="normal" ' + (S.mode === 'normal' ? 'selected' : '') + '>Normal</option><option value="prosa" ' + (S.mode === 'prosa' ? 'selected' : '') + '>Prosa</option></select>' +
+            '<label>Ansicht</label><select id="themeSelect"><option value="dark" ' + (S.theme === 'dark' ? 'selected' : '') + '>Dark</option><option value="light" ' + (S.theme === 'light' ? 'selected' : '') + '>Light</option><option value="epaper" ' + (S.theme === 'epaper' ? 'selected' : '') + '>E-Paper</option></select>' +
+            '<label>Schriftbild</label><select id="fontProfileSelect"><option value="baskerville" ' + (S.fontProfile === 'baskerville' ? 'selected' : '') + '>Baskerville-artig</option><option value="typewriter" ' + (S.fontProfile === 'typewriter' ? 'selected' : '') + '>Schreibmaschine</option></select>' +
+            '<div class="notice" style="margin-top:12px">Die Umschaltung betrifft bewusst vor allem den Schreibraum und die Karten. Baskerville-artig wirkt literarischer; Schreibmaschine wirkt trockener und fokussierter. Die exakte Darstellung hängt vom Gerät ab, weil wir ohne Webfonts in einer Single-File-App arbeiten.</div>' +
+            '<label>OpenAI API Token</label><input id="openaiToken" value="' + esc(getOpenAIToken()) + '" placeholder="sk-..." />' +
+            '<label>OpenAI Modell</label><input id="openaiModel" value="' + esc(getOpenAIModel()) + '" placeholder="z. B. gpt-4.1-mini" />' +
+            '<div class="notice" style="margin-top:12px">Der OpenAI-Token wird separat im localStorage gespeichert und nie in den JSON-Export oder den Gist-Backup geschrieben. Der neue Light-Modus lehnt sich visuell an deine Snowflake-App an, bleibt aber deutlich reduzierter und weniger bunt.</div>' +
+            '<div class="btnrow" style="margin-top:12px"><button class="btn btn-v" onclick="saveSettings()">Einstellungen speichern</button></div>' +
+          '</div>' +
+          '<div>' +
+            '<label>GitHub Token</label><input id="gistToken" value="' + esc(gistGetToken()) + '" placeholder="github_pat_..." />' +
+            '<label>Gist-ID</label><input id="gistId" value="' + esc(gistGetId()) + '" placeholder="123abc..." />' +
+            '<label style="display:flex; gap:8px; align-items:center; text-transform:none; font-size:14px"><input type="checkbox" id="gistAuto" style="width:auto; min-height:auto" ' + (gistGetAuto() ? 'checked' : '') + ' /> Auto-Sync nach 30 Sekunden</label>' +
+            '<div class="btnrow" style="margin-top:12px">' +
+              '<button class="btn btn-s" onclick="gistPush(false,false)">⬆ Hochladen</button>' +
+              '<button class="btn btn-m" onclick="gistPull()">⬇ Herunterladen</button>' +
+              '<button class="btn btn-g" onclick="gistMerge()">⊕ Merge</button>' +
+            '</div>' +
+            '<div class="notice" style="margin-top:12px">Sync folgt den Projektregeln: zentraler Header-Helper, kein Cache-Control bei GET, Content-Type bei PATCH und vierstufige Merge-Diagnose.</div>' +
+            '<div class="btnrow" style="margin-top:12px"><button class="btn btn-q" onclick="exportJson()">JSON exportieren</button><label class="btn btn-g" for="importFile">JSON importieren</label><input id="importFile" type="file" accept="application/json" style="display:none" onchange="importJson(event)" /></div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function saveSettings() {
+      S.mode = document.getElementById('modeSelect').value;
+      S.theme = document.getElementById('themeSelect').value;
+      S.fontProfile = document.getElementById('fontProfileSelect').value;
+      localStorage.setItem(OPENAI_TOKEN_KEY, document.getElementById('openaiToken').value.trim());
+      localStorage.setItem(OPENAI_MODEL_KEY, document.getElementById('openaiModel').value.trim() || 'gpt-4.1-mini');
+      localStorage.setItem(GIST_TOKEN_KEY, document.getElementById('gistToken').value.trim());
+      localStorage.setItem(GIST_ID_KEY, document.getElementById('gistId').value.trim());
+      localStorage.setItem(GIST_AUTO_KEY, document.getElementById('gistAuto').checked ? '1' : '0');
+      save(true);
+      toast('Einstellungen gespeichert.');
+    }
+
+    function exportPayload() {
+      return { version: S.version || 2, exported: nowIso(), S: JSON.parse(JSON.stringify(S)) };
+    }
+
+    function exportJson() {
+      var blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type:'application/json;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'accidental_genius_studio_export_' + todayIso() + '.json';
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    }
+
+    function importJson(e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function() {
+        try {
+          var parsed = JSON.parse(reader.result);
+          S = parsed.S ? parsed.S : parsed;
+          ensureDefaults();
+          save(true);
+          toast('Import erfolgreich.');
+        } catch (err) {
+          toast('Import fehlgeschlagen: ' + err.message);
+        }
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    function gistBuildPayload() { return exportPayload(); }
+
+    function fetchWithTimeoutRetry(url, options, retries) {
+      var timeout = 15000;
+      return new Promise(function(resolve, reject){
+        var done = false;
+        function attempt(remaining) {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function(){ ctrl.abort(); }, timeout);
+          fetch(url, Object.assign({}, options || {}, { signal: ctrl.signal })).then(function(res){
+            clearTimeout(timer); done = true; resolve(res);
+          }).catch(function(err){
+            clearTimeout(timer);
+            if (remaining > 0) setTimeout(function(){ attempt(remaining - 1); }, 600);
+            else reject(err);
+          });
+        }
+        attempt(retries || 0);
+      });
+    }
+
+    function gistAutoSyncDebounced() {
+      if (!gistGetAuto() || !gistGetToken() || !gistGetId()) return;
+      if (gistAutoSyncTimer) clearTimeout(gistAutoSyncTimer);
+      gistAutoSyncTimer = setTimeout(function(){ gistAutoSyncTimer = null; gistPush(false, true); }, 30000);
+    }
+
+    async function gistPush(force, silent) {
+      var token = gistGetToken(), id = gistGetId();
+      if (!token || !id) return silent ? null : toast('Gist nicht konfiguriert.');
+      if (force) return gistDoPush(token, id, silent);
+      try {
+        var res = await fetchWithTimeoutRetry('https://api.github.com/gists/' + id, { headers: githubHeaders(token) }, 1);
+        if (!res.ok) return gistDoPush(token, id, silent);
+        var gist = await res.json();
+        var file = gist.files && (gist.files[GIST_FILENAME] || Object.values(gist.files)[0]);
+        if (!file || !file.content) return gistDoPush(token, id, silent);
+        var remote;
+        try { remote = JSON.parse(file.content); } catch (e) { return gistDoPush(token, id, silent); }
+        var remoteTs = remote && remote.S && remote.S._lastExported ? remote.S._lastExported : '';
+        var localTs = S._lastExported || '';
+        if (remoteTs && localTs && remoteTs > localTs) {
+          if (silent) return null;
+          openModal('<div class="modal-title">Cloud ist neuer</div><div class="notice">Im Gist liegt ein neuerer Stand. Du kannst trotzdem hochladen, lieber mergen oder erst herunterladen.</div><div class="btnrow" style="margin-top:12px"><button class="btn btn-d" onclick="forcePushAfterConflict()">Trotzdem hochladen</button><button class="btn btn-g" onclick="closeModal(); gistMerge();">Merge</button><button class="btn btn-s" onclick="closeModal(); gistPull();">Herunterladen</button></div>');
+          return null;
+        }
+        return gistDoPush(token, id, silent);
+      } catch (e) {
+        return gistDoPush(token, id, silent);
+      }
+    }
+
+    function forcePushAfterConflict() { closeModal(); gistPush(true, false); }
+
+    async function gistDoPush(token, id, silent) {
+      try {
+        var res = await fetchWithTimeoutRetry('https://api.github.com/gists/' + id, {
+          method:'PATCH', headers: githubHeaders(token, true),
+          body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(gistBuildPayload(), null, 2) } } })
+        }, 1);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!silent) toast('In Gist gespeichert.');
+      } catch (e) {
+        if (!silent) toast('Gist-Upload fehlgeschlagen: ' + e.message);
+      }
+    }
+
+    async function gistPull() {
+      var token = gistGetToken(), id = gistGetId();
+      if (!token || !id) return toast('Gist nicht konfiguriert.');
+      try {
+        var res = await fetchWithTimeoutRetry('https://api.github.com/gists/' + id, { headers: githubHeaders(token) }, 1);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var gist = await res.json();
+        var file = gist.files && (gist.files[GIST_FILENAME] || Object.values(gist.files)[0]);
+        if (!file || !file.content) throw new Error('Keine passende Datei im Gist gefunden.');
+        var remote = JSON.parse(file.content);
+        S = remote.S ? remote.S : remote;
+        ensureDefaults();
+        save(true);
+        toast('Von Gist geladen.');
+      } catch (e) {
+        toast('Gist-Download fehlgeschlagen: ' + e.message);
+      }
+    }
+
+    function mergeEntities(localEntities, remoteEntities) {
+      var map = {};
+      [].concat(localEntities || [], remoteEntities || []).forEach(function(entity){
+        var sig = normalizeText((entity.type || '') + '|' + (entity.title || ''));
+        if (!sig) sig = entity.id || uid();
+        if (!map[sig]) map[sig] = JSON.parse(JSON.stringify(entity));
+        else {
+          var target = map[sig];
+          if ((entity.updatedAt || '') > (target.updatedAt || '')) {
+            target.title = entity.title; target.type = entity.type; target.profile = entity.profile; target.updatedAt = entity.updatedAt;
+          }
+          target.cards = mergeCards(target.cards || [], entity.cards || []);
+        }
+      });
+      return Object.values(map);
+    }
+
+    function mergeCards(localCards, remoteCards) {
+      var seen = {}, out = [];
+      [].concat(localCards || [], remoteCards || []).forEach(function(card){
+        var sig = normalizeText((card.title || '') + '|' + (card.text || ''));
+        if (seen[sig]) return;
+        seen[sig] = 1;
+        out.push(JSON.parse(JSON.stringify(card)));
+      });
+      return out;
+    }
+
+    function mergeNodes(localNodes, remoteNodes) {
+      var seen = {}, out = [];
+      [].concat(localNodes || [], remoteNodes || []).forEach(function(node){
+        var sig = normalizeText((node.parentId || '') + '|' + (node.title || '') + '|' + (node.text || ''));
+        if (!seen[sig]) {
+          seen[sig] = JSON.parse(JSON.stringify(node));
+        } else if ((node.updatedAt || '') > (seen[sig].updatedAt || '')) {
+          seen[sig] = JSON.parse(JSON.stringify(node));
+        }
+      });
+      Object.keys(seen).forEach(function(k){ out.push(seen[k]); });
+      return out;
+    }
+
+    async function gistMerge() {
+      var token = gistGetToken(), id = gistGetId();
+      if (!token || !id) return toast('Gist nicht konfiguriert.');
+      var res, gist, file, remote, writeRes;
+      try {
+        res = await fetchWithTimeoutRetry('https://api.github.com/gists/' + id, { headers: githubHeaders(token) }, 1);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+      } catch (e) {
+        console.error('[Merge] Schritt 1 – GET fehlgeschlagen:', e);
+        return toast('Netzwerkfehler beim Abrufen des Gist (Schritt 1): ' + e.message);
+      }
+      try {
+        gist = await res.json();
+        file = gist.files && (gist.files[GIST_FILENAME] || Object.values(gist.files)[0]);
+        if (!file || !file.content) throw new Error('Keine Datei im Gist.');
+        remote = JSON.parse(file.content);
+      } catch (e) {
+        console.error('[Merge] Schritt 2 – JSON-Parse fehlgeschlagen:', e);
+        return toast('Fehler beim Lesen der Cloud-Daten (Schritt 2): ' + e.message);
+      }
+      try {
+        var r = remote.S ? remote.S : remote;
+        var merged = JSON.parse(JSON.stringify(S));
+        merged.nodes = mergeNodes(S.nodes || [], r.nodes || []);
+        merged.entities = mergeEntities(S.entities || [], r.entities || []);
+        merged.structures = (S.structures && S.structures.length) ? S.structures : (r.structures || defaultStructures());
+        merged.currentStructureId = S.currentStructureId || r.currentStructureId || 'nine-step';
+        merged.mode = S.mode || r.mode || 'normal';
+        merged.theme = S.theme || r.theme || 'dark';
+        merged.currentNodeId = S.currentNodeId || r.currentNodeId || getRootNodeId();
+        S = merged;
+        ensureDefaults();
+      } catch (e) {
+        console.error('[Merge] Schritt 3 – Lokaler Merge-Fehler:', e);
+        return toast('Lokaler Merge-Fehler (Schritt 3): ' + e.message);
+      }
+      try {
+        save(true);
+        writeRes = await fetchWithTimeoutRetry('https://api.github.com/gists/' + id, {
+          method:'PATCH', headers: githubHeaders(token, true),
+          body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(gistBuildPayload(), null, 2) } } })
+        }, 1);
+        if (!writeRes.ok) throw new Error('HTTP ' + writeRes.status);
+      } catch (e) {
+        console.error('[Merge] Schritt 4 – PATCH fehlgeschlagen:', e);
+        return toast('Merge lokal OK, aber Cloud-Write fehlgeschlagen (Schritt 4): ' + e.message);
+      }
+      toast('Merge abgeschlossen.');
+    }
+
+    function bindBoardDrag() {
+      var shell = document.getElementById('boardShell');
+      if (!shell || shell._bound) return;
+      shell._bound = true;
+      shell.addEventListener('mousedown', function(e){
+        if (e.target.closest('.card')) return;
+        boardDragState = { x: e.clientX, scrollLeft: shell.scrollLeft };
+        shell.classList.add('dragging');
+      });
+      window.addEventListener('mousemove', function(e){
+        if (!boardDragState) return;
+        shell.scrollLeft = boardDragState.scrollLeft - (e.clientX - boardDragState.x);
+      });
+      window.addEventListener('mouseup', function(){ if (boardDragState) { shell.classList.remove('dragging'); boardDragState = null; } });
+      shell.addEventListener('touchstart', function(e){ shell._touchX = e.touches[0].clientX; shell._touchScroll = shell.scrollLeft; }, { passive:true });
+      shell.addEventListener('touchmove', function(e){ if (shell._touchX == null) return; shell.scrollLeft = shell._touchScroll - (e.touches[0].clientX - shell._touchX); }, { passive:true });
+      shell.addEventListener('touchend', function(){ shell._touchX = null; });
+    }
+
+    function scrollCurrentIntoView() {
+      var el = document.querySelector('.card.selected');
+      if (!el) return;
+      try { el.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' }); } catch (e) {}
+    }
+
+    document.addEventListener('keydown', function(e){
+      if (document.getElementById('modalBackdrop').style.display === 'flex') return;
+      var tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      var node = getNode(currentNodeId); if (!node) return;
+      if (e.key === 'ArrowLeft') {
+        var p = getParent(node); if (p) { selectNode(p.id); e.preventDefault(); }
+      } else if (e.key === 'ArrowRight') {
+        var kids = getChildren(node.id); if (kids.length) { selectNode(kids[0].id); e.preventDefault(); }
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        var sibs = getSiblings(node); if (!sibs.length) return;
+        var idx = sibs.findIndex(function(x){ return x.id === node.id; });
+        if (idx === -1) return;
+        var next = e.key === 'ArrowUp' ? sibs[idx - 1] : sibs[idx + 1];
+        if (next) { selectNode(next.id); e.preventDefault(); }
+      }
+    });
+
+    // Note: Für echte PWA-Installierbarkeit auf GitHub Pages gehören manifest.json und sw.js ins Repo.
+    // Wegen der Single-File-Vorgabe bleibt diese index.html bewusst allein lauffähig.
+
+    load();
+    render();
+  </script>
+</body>
+</html>
